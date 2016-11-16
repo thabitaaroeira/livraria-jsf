@@ -19,33 +19,24 @@ public class LoginBean {
 	}
 
 	public String efetuaLogin() {
-		System.out.println("Fazendo login do usuário " + this.usuario.getEmail());
-
-		boolean existe = new UsuarioDao().existe(this.usuario);
+		System.out.println("fazendo login do usuario " + this.usuario.getEmail());
 
 		FacesContext context = FacesContext.getCurrentInstance();
-
+		boolean existe = new UsuarioDao().existe(this.usuario);
 		if (existe) {
 			context.getExternalContext().getSessionMap().put("usuarioLogado", this.usuario);
-
 			return "livro?faces-redirect=true";
 		}
 
-		// escopo flash dura duas requisicoes
 		context.getExternalContext().getFlash().setKeepMessages(true);
-		// "login:email"
 		context.addMessage(null, new FacesMessage("Usuário não encontrado"));
 
 		return "login?faces-redirect=true";
 	}
 
 	public String deslogar() {
-		System.out.println("Deslogando...");
-
 		FacesContext context = FacesContext.getCurrentInstance();
 		context.getExternalContext().getSessionMap().remove("usuarioLogado");
-
 		return "login?faces-redirect=true";
 	}
-
 }

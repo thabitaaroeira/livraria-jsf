@@ -1,8 +1,11 @@
 package br.com.caelum.livraria.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -21,10 +24,22 @@ public class LivroBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Livro livro = new Livro();
-
+	private DAO<Livro> livroDAO = new DAO<Livro>(Livro.class);
+	private DAO<Autor> autorDAO = new DAO<Autor>(Autor.class);
+	private List<Livro> livros = new ArrayList<Livro>();
+	private List<Autor> autores = new ArrayList<Autor>();
 	private Integer autorId;
 
-	private Integer livroId;
+	@PostConstruct
+	public void init() {
+		if (this.livros.isEmpty()) {
+			this.livros = livroDAO.listaTodos();
+		}
+
+		if (this.autores.isEmpty()) {
+			this.autores = autorDAO.listaTodos();
+		}
+	}
 
 	public void setAutorId(Integer autorId) {
 		this.autorId = autorId;
@@ -38,28 +53,24 @@ public class LivroBean implements Serializable {
 		return livro;
 	}
 
-	public Integer getLivroId() {
-		return livroId;
-	}
-
-	public void setLivroId(Integer livroId) {
-		this.livroId = livroId;
-	}
-
 	public List<Livro> getLivros() {
-		return new DAO<Livro>(Livro.class).listaTodos();
+		return this.livros;
 	}
 
 	public List<Autor> getAutores() {
-		return new DAO<Autor>(Autor.class).listaTodos();
+		return this.autores;
 	}
 
 	public List<Autor> getAutoresDoLivro() {
 		return this.livro.getAutores();
 	}
 
+	public void carregarLivroPelaId() {
+		this.livro = livroDAO.buscaPorId(this.livro.getId());
+	}
+
 	public void gravarAutor() {
-		Autor autor = new DAO<Autor>(Autor.class).buscaPorId(this.autorId);
+		Autor autor = autorDAO.buscaPorId(this.autorId);
 		this.livro.adicionaAutor(autor);
 		System.out.println("Escrito por: " + autor.getNome());
 	}
@@ -74,26 +85,28 @@ public class LivroBean implements Serializable {
 		}
 
 		if (this.livro.getId() == null) {
-			new DAO<Livro>(Livro.class).adiciona(this.livro);
+			livroDAO.adiciona(this.livro);
+			this.livros = livroDAO.listaTodos();
+
 		} else {
-			new DAO<Livro>(Livro.class).atualiza(this.livro);
+			livroDAO.atualiza(this.livro);
 		}
 
 		this.livro = new Livro();
 	}
 
-	public void carregar(Livro livro) {
-		System.out.println("Carregando livro " + livro.getTitulo());
-		this.livro = livro;
-	}
-
 	public void remover(Livro livro) {
-		System.out.println("Removendo livro " + livro.getTitulo());
-		new DAO<Livro>(Livro.class).remove(livro);
+		System.out.println("Removendo livro");
+		livroDAO.remove(livro);
 	}
 
 	public void removerAutorDoLivro(Autor autor) {
 		this.livro.removeAutor(autor);
+	}
+
+	public void carregar(Livro livro) {
+		System.out.println("Carregando livro");
+		this.livro = livro;
 	}
 
 	public String formAutor() {
@@ -102,15 +115,41 @@ public class LivroBean implements Serializable {
 	}
 
 	public void comecaComDigitoUm(FacesContext fc, UIComponent component, Object value) throws ValidatorException {
-
 		String valor = value.toString();
 		if (!valor.startsWith("1")) {
 			throw new ValidatorException(new FacesMessage("ISBN deveria começar com 1"));
 		}
-
 	}
 
-	public void carregarLivroPelaId() {
-		this.livro = new DAO<Livro>(Livro.class).buscaPorId(livroId);
+	public boolean precoEhMenor(Object valorColuna, Object filtroDigitado, Locale locale) {
+		// tirando espaços do filtro
+		String textoDigitado = (filtroDigitado == null) ? null : filtroDigitado.toString().trim();
+
+		System.out.println("Filtrando pelo " + textoDigitado + ", Valor do elemento: " + valorColuna);
+
+		// o filtro é nulo ou vazio?
+		if (textoDigitado == null || textoDigitado.equals("")) {
+			return true;
+		}
+
+		// elemento da tabela é nulo?
+		if (valorColuna == null) {
+			return false;
+		}
+
+		try {
+			// fazendo o parsing do filtro para converter para Double
+			Double precoDigitado = Double.valueOf(textoDigitado);
+			Double precoColuna = (Double) valorColuna;
+
+			// comparando os valores, compareTo devolve um valor negativo se o
+			// value é menor do que o filtro
+			return precoColuna.compareTo(precoDigitado) < 0;
+
+		} catch (NumberFormatException e) {
+
+			// usuario nao digitou um numero
+			return false;
+		}
 	}
 }

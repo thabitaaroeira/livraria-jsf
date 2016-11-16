@@ -5,9 +5,9 @@
 	version="2.0">
 
 	<persistence-unit name="livraria" transaction-type="RESOURCE_LOCAL">
-
-   		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
 		<class>br.com.caelum.livraria.modelo.Usuario</class>
 		<class>br.com.caelum.livraria.modelo.Livro</class>
 		<class>br.com.caelum.livraria.modelo.Autor</class>

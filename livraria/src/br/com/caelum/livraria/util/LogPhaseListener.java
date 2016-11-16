@@ -10,7 +10,7 @@ public class LogPhaseListener implements PhaseListener {
 
 	@Override
 	public void afterPhase(PhaseEvent arg0) {
-	}
+	} 
 
 	@Override
 	public void beforePhase(PhaseEvent event) {
