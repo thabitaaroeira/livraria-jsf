@@ -7,23 +7,46 @@
 	xmlns:p="http://primefaces.org/ui">
 
 <h:head />
+
 <h:body>
+
 	<div id="cabecalho">
 		<h:graphicImage library="img" name="logo.png" />
 
-		<h:form rendered="#{usuarioLogado != null}">
-			<h:commandLink value="Logout" action="#{loginBean.deslogar}" />
+		<h:form id="menuForm" rendered="#{usuarioLogado != null}">
+
+			<p:growl id="messages" showDetail="true" autoUpdate="true" />
+
+			<p:menuButton value="Menu">
+
+				<p:menuitem value="Livros" action="livro" icon="fa fa-fw fa-book" />
+
+				<p:menuitem value="Autores" action="autor" icon="fa fa-fw fa-user" />
+
+				<p:separator />
+
+				<p:menuitem value="Logout" action="#{loginBean.deslogar}"
+					icon="fa fa-fw fa-sign-out" />
+
+			</p:menuButton>
+
 		</h:form>
 
 		<h1>
+
 			<ui:insert name="titulo"></ui:insert>
+
 		</h1>
 	</div>
 
 	<div id="conteudo">
+
 		<ui:insert name="conteudo">
+
 		</ui:insert>
+
 	</div>
+
 </h:body>
 
 </html>

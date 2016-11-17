@@ -12,7 +12,7 @@ public class LivroDataModel extends LazyDataModel<Livro> {
 
 	private static final long serialVersionUID = 1L;
 
-	private DAO<Livro> dao;
+	private DAO<Livro> dao = new DAO<Livro>(Livro.class);
 
 	public LivroDataModel() {
 		super.setRowCount(dao.quantidadeDeElementos());

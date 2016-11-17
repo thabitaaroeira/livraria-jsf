@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+
+	<ui:define name="titulo">
+		<p:outputPanel>Menu</p:outputPanel>
+	</ui:define>
+
+	<ui:define name="conteudo">
+
+		<h:form>
+
+			<p:menubar>
+				<p:submenu label="Cadastros" icon="ui-icon-document">
+					<p:menuitem value="Livros" action="livro?faces-redirect=true"
+						icon="fa fa-fw fa-edit" />
+					<p:separator />
+					<p:menuitem value="Autor" action="autor?faces-redirect=true"
+						icon="fa fa-fw fa-edit" />
+				</p:submenu>
+
+				<p:submenu label="Outros">
+					<p:menuitem value="Logout" action="#{loginBean.deslogar}"
+						icon="fa fa-fw fa-sign-out" />
+				</p:submenu>
+				<p:submenu label="Primefaces">
+					<p:menuitem value="ShowCase" url="http://primefaces.org/showcase"
+						icon="fa fa-fw fa-sign-out" />
+				</p:submenu>
+			</p:menubar>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>
