@@ -11,7 +11,22 @@
 <h:body>
 
 	<div id="cabecalho">
-		<h:graphicImage library="img" name="logo.png" />
+
+		<h:panelGrid columns="2">
+
+			<h:graphicImage library="img" name="logo.png" />
+
+			<h:form rendered="#{usuarioLogado != null}">
+				<p:themeSwitcher id="basic" style="width:165px; position:absolute; right:10px"
+					value="#{temaBean.tema}">
+					<f:selectItem itemLabel="Choose Theme" itemValue="" />
+					<f:selectItems value="#{temaBean.temas}" var="tema"
+						itemLabel="#{tema}" itemValue="#{tema}" />
+					<f:ajax />
+				</p:themeSwitcher>
+			</h:form>
+
+		</h:panelGrid>
 
 		<h:form id="menuForm" rendered="#{usuarioLogado != null}">
 
