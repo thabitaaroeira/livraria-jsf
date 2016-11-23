@@ -105,7 +105,12 @@
 
 		<h:form id="formTabelaLivros">
 
-			<p:dataTable value="#{livroBean.livroDataModel}" var="livro"
+
+<!-- 			<p:dataTable value="#{livroBean.livroDataModel}" var="livro" -->
+<!-- 				id="tabelaLivros" widgetVar="tabelaLivros" -->
+<!-- 				emptyMessage="Nenhum Livro" paginator="true" rows="5"> -->
+				
+			<p:dataTable value="#{livroBean.livros}" var="livro"
 				id="tabelaLivros" widgetVar="tabelaLivros"
 				emptyMessage="Nenhum Livro" paginator="true" rows="5">
 

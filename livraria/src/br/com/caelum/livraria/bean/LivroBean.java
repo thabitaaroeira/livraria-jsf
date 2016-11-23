@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -15,11 +16,14 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
+
 import br.com.caelum.livraria.dao.AutorDao;
 import br.com.caelum.livraria.dao.LivroDao;
 import br.com.caelum.livraria.modelo.Autor;
 import br.com.caelum.livraria.modelo.Livro;
-import br.com.caelum.livraria.modelo.LivroDataModel;
+import br.com.caelum.livraria.tx.Transacional;
 
 @Named
 @ViewScoped
@@ -28,12 +32,25 @@ public class LivroBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	private LivroDao livroDAO;
+	private LivroDao livroDao;
 
 	@Inject
-	private AutorDao autorDAO;
+	private AutorDao autorDao;
 
-	private LivroDataModel livroDataModel = new LivroDataModel();
+	private LazyDataModel<Livro> livroDataModel = new LazyDataModel<Livro>() {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public List<Livro> load(int inicio, int quantidade, String campoOrdenacao, SortOrder sentidoOrdenacao,
+				Map<String, Object> filtros) {
+			String coluna = "titulo";
+			String valor = (String) filtros.get(coluna);
+			return livroDao.listaTodosPaginada(inicio, quantidade, coluna, valor);
+		}
+
+	};
+
 	private Livro livro = new Livro();
 	private List<Livro> livros = new ArrayList<Livro>();
 	private List<Autor> autores = new ArrayList<Autor>();
@@ -42,12 +59,15 @@ public class LivroBean implements Serializable {
 
 	@PostConstruct
 	public void init() {
+		// this.livroDataModel = new LivroDataModel(this.livroDao);
+		// this.livroDataModel.setRowCount(livroDao.quantidadeDeElementos());
+
 		if (this.livros.isEmpty()) {
-			this.livros = livroDAO.listaTodos();
+			this.livros = livroDao.listaTodos();
 		}
 
 		if (this.autores.isEmpty()) {
-			this.autores = autorDAO.listaTodos();
+			this.autores = autorDao.listaTodos();
 		}
 	}
 
@@ -55,7 +75,7 @@ public class LivroBean implements Serializable {
 		return generos;
 	}
 
-	public LivroDataModel getLivroDataModel() {
+	public LazyDataModel<Livro> getLivroDataModel() {
 		return livroDataModel;
 	}
 
@@ -84,15 +104,16 @@ public class LivroBean implements Serializable {
 	}
 
 	public void carregarLivroPelaId() {
-		this.livro = livroDAO.buscaPorId(this.livro.getId());
+		this.livro = livroDao.buscaPorId(this.livro.getId());
 	}
 
 	public void gravarAutor() {
-		Autor autor = autorDAO.buscaPorId(this.autorId);
+		Autor autor = autorDao.buscaPorId(this.autorId);
 		this.livro.adicionaAutor(autor);
 		System.out.println("Escrito por: " + autor.getNome());
 	}
 
+	@Transacional
 	public void gravar() {
 		System.out.println("Gravando livro " + this.livro.getTitulo());
 
@@ -103,19 +124,20 @@ public class LivroBean implements Serializable {
 		}
 
 		if (this.livro.getId() == null) {
-			livroDAO.adiciona(this.livro);
-			this.livros = livroDAO.listaTodos();
+			livroDao.adiciona(this.livro);
+			this.livros = livroDao.listaTodos();
 
 		} else {
-			livroDAO.atualiza(this.livro);
+			livroDao.atualiza(this.livro);
 		}
 
 		this.livro = new Livro();
 	}
 
+	@Transacional
 	public void remover(Livro livro) {
 		System.out.println("Removendo livro");
-		livroDAO.remove(livro);
+		livroDao.remove(livro);
 	}
 
 	public void removerAutorDoLivro(Autor autor) {
