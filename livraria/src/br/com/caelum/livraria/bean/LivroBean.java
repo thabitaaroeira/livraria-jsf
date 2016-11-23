@@ -8,13 +8,15 @@ import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
-import br.com.caelum.livraria.dao.DAO;
+import br.com.caelum.livraria.dao.AutorDao;
+import br.com.caelum.livraria.dao.LivroDao;
 import br.com.caelum.livraria.modelo.Autor;
 import br.com.caelum.livraria.modelo.Livro;
 import br.com.caelum.livraria.modelo.LivroDataModel;
@@ -25,10 +27,14 @@ public class LivroBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Inject
+	private LivroDao livroDAO;
+
+	@Inject
+	private AutorDao autorDAO;
+
 	private LivroDataModel livroDataModel = new LivroDataModel();
 	private Livro livro = new Livro();
-	private DAO<Livro> livroDAO = new DAO<Livro>(Livro.class);
-	private DAO<Autor> autorDAO = new DAO<Autor>(Autor.class);
 	private List<Livro> livros = new ArrayList<Livro>();
 	private List<Autor> autores = new ArrayList<Autor>();
 	private Integer autorId;
