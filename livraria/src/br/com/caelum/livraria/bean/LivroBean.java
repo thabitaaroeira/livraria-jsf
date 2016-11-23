@@ -37,6 +37,9 @@ public class LivroBean implements Serializable {
 	@Inject
 	private AutorDao autorDao;
 
+	@Inject
+	private FacesContext context;
+
 	private LazyDataModel<Livro> livroDataModel = new LazyDataModel<Livro>() {
 
 		private static final long serialVersionUID = 1L;
@@ -118,8 +121,7 @@ public class LivroBean implements Serializable {
 		System.out.println("Gravando livro " + this.livro.getTitulo());
 
 		if (livro.getAutores().isEmpty()) {
-			FacesContext.getCurrentInstance().addMessage("autor",
-					new FacesMessage("Livro deve ter pelo menos um Autor."));
+			context.addMessage("autor", new FacesMessage("Livro deve ter pelo menos um Autor."));
 			return;
 		}
 
@@ -146,7 +148,7 @@ public class LivroBean implements Serializable {
 
 	public void carregar(Livro livro) {
 		System.out.println("Carregando livro");
-		this.livro = livro;
+		this.livro = this.livroDao.buscaPorId(livro.getId());
 	}
 
 	public String formAutor() {
